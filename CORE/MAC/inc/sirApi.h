@@ -4418,6 +4418,7 @@ typedef struct sSirActiveModeSetBcnFilterReq
    tANI_U16               messageType;
    tANI_U16               length;
    tANI_U8                seesionId;
+   tSirMacAddr            bssid;
 } tSirSetActiveModeSetBncFilterReq, *tpSirSetActiveModeSetBncFilterReq;
 
 typedef enum
@@ -4431,6 +4432,7 @@ typedef struct sSirSmeHT40StopOBSSScanInd
    tANI_U16               messageType;
    tANI_U16               length;
    tANI_U8                seesionId;
+   tSirMacAddr            bssid;
 } tSirSmeHT40OBSSStopScanInd, *tpSirSmeHT40OBSSStopScanInd;
 
 typedef struct sSirSmeHT40OBSSScanInd
