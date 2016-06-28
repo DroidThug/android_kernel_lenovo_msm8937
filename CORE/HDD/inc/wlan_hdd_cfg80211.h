@@ -1351,6 +1351,25 @@ v_U8_t* wlan_hdd_cfg80211_get_ie_ptr(
 #endif
                                      int length, v_U8_t eid);
 
+#if defined(CFG80211_DISCONNECTED_V2) || \
+(LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0))
+static inline void wlan_hdd_cfg80211_indicate_disconnect(struct net_device *dev,
+                                                         bool locally_generated,
+                                                         int reason)
+{
+    cfg80211_disconnected(dev, reason, NULL, 0,
+                          locally_generated, GFP_KERNEL);
+}
+#else
+static inline void wlan_hdd_cfg80211_indicate_disconnect(struct net_device *dev,
+                                                         bool locally_generated,
+                                                         int reason)
+{
+    cfg80211_disconnected(dev, reason, NULL, 0,
+                          GFP_KERNEL);
+}
+#endif
+
 #ifdef FEATURE_WLAN_CH_AVOID
 int wlan_hdd_send_avoid_freq_event(hdd_context_t *pHddCtx,
                                    tHddAvoidFreqList *pAvoidFreqList);
@@ -1405,6 +1424,5 @@ enum qca_wlan_vendor_attr_memory_dump {
     QCA_WLAN_VENDOR_ATTR_MEMORY_DUMP_MAX =
     QCA_WLAN_VENDOR_ATTR_MEMORY_DUMP_AFTER_LAST - 1,
 };
-
 
 #endif
