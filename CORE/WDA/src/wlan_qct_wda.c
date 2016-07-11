@@ -131,7 +131,7 @@
 #define WDA_WAIT_MSEC_TILL_RING_EMPTY    10    /* 10 msec wait per cycle */
 #define WDA_IS_NULL_MAC_ADDRESS(mac_addr) \
    ((mac_addr[0] == 0x00) && (mac_addr[1] == 0x00) && (mac_addr[2] == 0x00) &&\
-    (mac_addr[1] == 0x00) && (mac_addr[2] == 0x00) && (mac_addr[3] == 0x00))
+    (mac_addr[3] == 0x00) && (mac_addr[4] == 0x00) && (mac_addr[5] == 0x00))
 
 #define WDA_MAC_ADDR_ARRAY(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
 #define WDA_MAC_ADDRESS_STR "%02x:%02x:%02x:%02x:%02x:%02x"
@@ -14179,7 +14179,8 @@ VOS_STATUS WDA_TxPacket(tWDA_CbContext *pWDA,
       /* TX MGMT fail with COMP timeout, try to detect DXE stall */
       WDA_TransportChannelDebug(pMac, 1, 0);
 
-      WLANTL_TLDebugMessage(WLANTL_DEBUG_FW_CLEANUP);
+      /* Send Flush command to FW */
+      vos_fwDumpReq(274, 0, 0, 0, 0, 1);
 
       if (vos_isFatalEventEnabled())
          vos_fatal_event_logs_req(WLAN_LOG_TYPE_FATAL,
