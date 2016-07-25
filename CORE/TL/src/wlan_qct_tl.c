@@ -1258,6 +1258,7 @@ WLANTL_RegisterSTAClient
   pClientSTA->tlPri    = WLANTL_STA_PRI_NORMAL;
   pClientSTA->wSTADesc.ucSTAId  = pwSTADescType->ucSTAId;
   pClientSTA->ptkInstalled = 0;
+  pClientSTA->disassoc_progress = VOS_FALSE;
 
   pMac = vos_get_context(VOS_MODULE_ID_PE, pvosGCtx);
   if ( NULL != pMac )
@@ -4757,7 +4758,8 @@ WLANTL_GetFrames
            for ( i = 0; i < WLAN_MAX_STA_COUNT; i++)
            {
               if (NULL != pTLCb->atlSTAClients[i] && (pTLCb->atlSTAClients[i]->ucExists) &&
-                  (pTLCb->atlSTAClients[i]->ucPktPending))
+                  (pTLCb->atlSTAClients[i]->ucPktPending) &&
+                  (pTLCb->atlSTAClients[i]->disassoc_progress == VOS_FALSE))
               {
                   /* There is station to be Served */
                   break;
@@ -6044,15 +6046,23 @@ WLANTL_RxFrames
         }
       }/*if bcast*/
 
-      if ((WLANTL_STA_ID_INVALID(ucSTAId)) || (WLANTL_TID_INVALID(ucTid)))
+      if (WLANTL_STA_ID_INVALID(ucSTAId))
       {
         TLLOGW(VOS_TRACE( VOS_MODULE_ID_TL, VOS_TRACE_LEVEL_WARN,
-                   "WLAN TL:STAId %d, Tid %d. Invalid STA ID/TID- dropping pkt",
-                   ucSTAId, ucTid));
+                   "WLAN TL:STAId %d. Invalid STA ID dropping pkt",
+                   ucSTAId));
         /* Drop packet */
         vos_pkt_return_packet(vosTempBuff);
         vosTempBuff = vosDataBuff;
         continue;
+      }
+
+      if (WLANTL_TID_INVALID( ucTid)) {
+         /* There is a possibility AP uses wrong TID. In that case to avoid
+            dropping EAPOL packet in the driver use TID to zero.*/
+         VOS_TRACE( VOS_MODULE_ID_TL, VOS_TRACE_LEVEL_INFO,
+             "WLAN TL:Invalid Tid: %d Frame type: %d", ucTid, ucFrmType);
+         ucTid = 0;
       }
 
 #ifdef WLAN_FEATURE_LINK_LAYER_STATS
@@ -11093,7 +11103,8 @@ WLAN_TLAPGetNextTxIds
           continue;
         }
 
-        if (WLANTL_STA_AUTHENTICATED != pTLCb->atlSTAClients[ucNextSTA]->tlState)
+        if ((WLANTL_STA_AUTHENTICATED != pTLCb->atlSTAClients[ucNextSTA]->tlState)
+           || (pTLCb->atlSTAClients[ucNextSTA]->disassoc_progress == VOS_TRUE ))
         {
           TLLOG2(VOS_TRACE( VOS_MODULE_ID_TL, VOS_TRACE_LEVEL_INFO_HIGH,
                  "%s Sta %d not in auth state so skipping it.",
@@ -11761,7 +11772,7 @@ WLANTL_CleanSTA
   ptlSTAClient->wSTADesc.ucSwFrameTXXlation = 0;
   ptlSTAClient->wSTADesc.ucSwFrameRXXlation = 0;
   ptlSTAClient->wSTADesc.ucProtectedFrame = 0;
-
+  ptlSTAClient->disassoc_progress = VOS_FALSE;
   /*-------------------------------------------------------------------------
     AMSDU information for the STA
    -------------------------------------------------------------------------*/
