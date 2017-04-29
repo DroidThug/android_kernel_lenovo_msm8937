@@ -168,7 +168,8 @@ enum usb_chg_type {
 	USB_DCP_CHARGER,
 	USB_CDP_CHARGER,
 	USB_PROPRIETARY_CHARGER,
-	USB_FLOATED_CHARGER,
+//	USB_FLOATED_CHARGER,
+	USB_UNSUPPORTED_CHARGER,
 };
 
 /**
@@ -221,6 +222,12 @@ enum usb_ctrl {
 enum usb_id_state {
 	USB_ID_GROUND = 0,
 	USB_ID_FLOAT,
+};
+
+enum floated_chg_type {
+	FLOATING_AS_SDP = 0,
+	FLOATING_AS_DCP,
+	FLOATING_AS_INVALID,
 };
 
 /**
@@ -326,6 +333,7 @@ struct msm_otg_platform_data {
 	bool emulation;
 	bool enable_streaming;
 	bool enable_axi_prefetch;
+	enum floated_chg_type enable_floated_charger;
 	bool enable_sdp_typec_current_limit;
 };
 
@@ -533,6 +541,7 @@ struct msm_otg {
 	struct completion ext_chg_wait;
 	struct pinctrl *phy_pinctrl;
 	bool is_ext_chg_dcp;
+	bool is_ext_chg_detected;
 	struct qpnp_vadc_chip	*vadc_dev;
 	int ext_id_irq;
 	bool phy_irq_pending;
@@ -672,8 +681,7 @@ static inline int get_pm_runtime_counter(struct device *dev) { return -ENOSYS; }
 #endif
 
 #ifdef CONFIG_USB_DWC3_MSM
-int msm_ep_config(struct usb_ep *ep, struct usb_request *request,
-							gfp_t gfp_flags);
+int msm_ep_config(struct usb_ep *ep, struct usb_request *request);
 int msm_ep_unconfig(struct usb_ep *ep);
 void dwc3_tx_fifo_resize_request(struct usb_ep *ep, bool qdss_enable);
 int msm_data_fifo_config(struct usb_ep *ep, phys_addr_t addr, u32 size,
@@ -688,8 +696,7 @@ static inline int msm_data_fifo_config(struct usb_ep *ep, phys_addr_t addr,
 	return -ENODEV;
 }
 
-static inline int msm_ep_config(struct usb_ep *ep, struct usb_request *request,
-							gfp_t gfp_flags)
+static inline int msm_ep_config(struct usb_ep *ep, struct usb_request *request)
 {
 	return -ENODEV;
 }

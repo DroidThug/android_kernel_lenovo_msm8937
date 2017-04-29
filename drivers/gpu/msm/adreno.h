@@ -568,11 +568,13 @@ struct adreno_vbif_platform {
  * struct adreno_vbif_snapshot_registers - Holds an array of vbif registers
  * listed for snapshot dump for a particular core
  * @version: vbif version
+ * @mask: vbif revision mask
  * @registers: vbif registers listed for snapshot dump
  * @count: count of vbif registers listed for snapshot
  */
 struct adreno_vbif_snapshot_registers {
 	const unsigned int version;
+	const unsigned int mask;
 	const unsigned int *registers;
 	const int count;
 };
@@ -711,6 +713,7 @@ struct adreno_gpudev {
 				struct adreno_ringbuffer *, unsigned int *,
 				struct kgsl_context *, uint64_t cond_addr,
 				struct kgsl_memobj_node *);
+	int (*preemption_yield_enable)(unsigned int *);
 	int (*preemption_post_ibsubmit)(struct adreno_device *,
 				struct adreno_ringbuffer *, unsigned int *,
 				struct kgsl_context *);
