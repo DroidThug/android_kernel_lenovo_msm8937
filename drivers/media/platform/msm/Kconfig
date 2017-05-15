@@ -58,7 +58,7 @@ config MSMB_CAMERA_DEBUG
 	  Enable printk() debug for msm camera 2.0
 
 if LENOVO_DIR_CAMERA
-source "../vendor/lenovo/camera/camera-driver/Kconfig"
+source "drivers/misc/lenovo/camera/camera-driver/Kconfig"
 endif # LENOVO_DIR_CAMERA
 if QUALCOMM_DIR_CAMERA
 source "drivers/media/platform/msm/camera_v2/Kconfig"
