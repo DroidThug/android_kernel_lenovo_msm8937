@@ -808,11 +808,6 @@ static int snd_compress_simple_ioctls(struct file *file,
 		break;
 #endif
 
-	case _IOC_NR(SNDRV_COMPRESS_GET_CODEC_CAPS):
-		retval = snd_compr_get_codec_caps(stream, arg);
-		break;
-
-
 	case _IOC_NR(SNDRV_COMPRESS_TSTAMP):
 		retval = snd_compr_tstamp(stream, arg);
 		break;
