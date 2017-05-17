@@ -3300,20 +3300,18 @@ static ssize_t mdss_mdp_misr_store(struct device *dev,
 		req.frame_count = 1;
 	} else {
 		pr_err("misr not supported fo this fb:%d\n", mfd->index);
-		rc = -ENODEV;
-		return rc;
 	}
 
 	if (enable_misr) {
 		mdss_misr_set(mdata, &req , ctl);
 
-		if ((ctl->intf_type == MDSS_INTF_DSI) && is_panel_split(mfd))
+		if (is_panel_split(mfd))
 			mdss_misr_set(mdata, &sreq , ctl);
 
 	} else {
 		mdss_misr_disable(mdata, &req, ctl);
 
-		if ((ctl->intf_type == MDSS_INTF_DSI) && is_panel_split(mfd))
+		if (is_panel_split(mfd))
 			mdss_misr_disable(mdata, &sreq , ctl);
 	}
 
@@ -4299,20 +4297,16 @@ static int __mdss_overlay_src_split_sort(struct msm_fb_data_type *mfd,
 		__overlay_swap_func);
 
 	for (i = 0; i < num_ovs; i++) {
-		if (ovs[i].z_order >= MDSS_MDP_MAX_STAGE) {
-			pr_err("invalid stage:%u\n", ovs[i].z_order);
-			return -EINVAL;
-		}
 		if (ovs[i].dst_rect.x < left_lm_w) {
 			if (left_lm_zo_cnt[ovs[i].z_order] == 2) {
-				pr_err("more than 2 ov @ stage%u on left lm\n",
+				pr_err("more than 2 ov @ stage%d on left lm\n",
 					ovs[i].z_order);
 				return -EINVAL;
 			}
 			left_lm_zo_cnt[ovs[i].z_order]++;
 		} else {
 			if (right_lm_zo_cnt[ovs[i].z_order] == 2) {
-				pr_err("more than 2 ov @ stage%u on right lm\n",
+				pr_err("more than 2 ov @ stage%d on right lm\n",
 					ovs[i].z_order);
 				return -EINVAL;
 			}
