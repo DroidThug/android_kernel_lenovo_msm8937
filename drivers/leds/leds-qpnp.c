@@ -1735,6 +1735,7 @@ static int qpnp_rgb_set(struct qpnp_led_data *led)
 		if (!led->rgb_cfg->pwm_cfg->blinking)
 			led->rgb_cfg->pwm_cfg->mode =
 				led->rgb_cfg->pwm_cfg->default_mode;
+		printk("%s,brightness is :%d,mode is :%d\n",__func__,led->cdev.brightness,led->rgb_cfg->pwm_cfg->mode);
 		if (led->rgb_cfg->pwm_cfg->mode == PWM_MODE) {
 			period_us = led->rgb_cfg->pwm_cfg->pwm_period_us;
 			if (period_us > INT_MAX / NSEC_PER_USEC) {
@@ -1778,6 +1779,7 @@ static int qpnp_rgb_set(struct qpnp_led_data *led)
 	} else {
 		led->rgb_cfg->pwm_cfg->mode =
 			led->rgb_cfg->pwm_cfg->default_mode;
+		printk("%s,brightness is :%d,mode is :%d\n",__func__,led->cdev.brightness,led->rgb_cfg->pwm_cfg->mode);
 		pwm_disable(led->rgb_cfg->pwm_cfg->pwm_dev);
 		led->rgb_cfg->pwm_cfg->pwm_enabled = 0;
 		rc = qpnp_led_masked_write(led,
