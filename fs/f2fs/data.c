@@ -1364,10 +1364,12 @@ static int __write_data_page(struct page *page, bool *submitted,
 	struct f2fs_io_info fio = {
 		.sbi = sbi,
 		.type = DATA,
-		.rw = wbc_to_write_cmd(wbc),
-		.page = page,
-		.encrypted_page = NULL,
-		.submitted = false,
+                .op = REQ_OP_WRITE,
+                .op_flags = wbc_to_write_flags(wbc),
+                .old_blkaddr = NULL_ADDR,
+                .page = page,
+                .encrypted_page = NULL,
+                .submitted = false,
 	};
 
 	trace_f2fs_writepage(page, DATA);
