@@ -57,7 +57,7 @@ Module.symvers
 #
 !.gitignore
 !.mailmap
-!. drivers/input/touchscreen/Lenovo*.i
+!drivers/input/touchscreen/Lenovo*.i
 
 #
 # Generated include files
